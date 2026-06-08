@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>忆路打车 - 适老化原型</title>
+  <style>
+    :root {
+      --bg: #F8F6F0;
+      --paper: #FFFDF8;
+      --ink: #263238;
+      --text: #34444B;
+      --muted: #5E6D73;
+      --line: #E6E0D5;
+      --blue: #3F7EAE;
+      --blue-dark: #2F658E;
+      --blue-soft: #E8F2FA;
+      --green: #78A889;
+      --green-dark: #4F8266;
+      --green-soft: #EAF5EE;
+      --orange: #F2A65A;
+      --orange-soft: #FFF0DC;
+      --red: #D94A4A;
+      --red-soft: #FFE9E8;
+      --shadow: 0 14px 32px rgba(55, 72, 78, .11);
+      --soft-shadow: 0 8px 20px rgba(55, 72, 78, .08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 15% 12%, rgba(242, 166, 90, .16), transparent 30%),
+        radial-gradient(circle at 84% 10%, rgba(63, 126, 174, .14), transparent 32%),
+        #EDF1EF;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button {
+      border: 0;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .stage {
+      width: 100%;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      position: relative;
+      overflow: hidden;
+      border: 7px solid #1F282C;
+      border-radius: 42px;
+      background: #1F282C;
+      box-shadow: 0 28px 62px rgba(38, 52, 58, .25);
+    }
+
+    .phone::before {
+      content: "";
+      width: 118px;
+      height: 28px;
+      position: absolute;
+      left: 50%;
+      top: 12px;
+      z-index: 20;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: #101417;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.12);
+    }
+
+    .app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 34px;
+      background: var(--bg);
+      position: relative;
+    }
+
+    .status {
+      height: 48px;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px 0;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 700;
+      background: linear-gradient(180deg, #FFFCF6, var(--bg));
+    }
+
+    .battery {
+      width: 34px;
+      height: 14px;
+      border: 2px solid var(--ink);
+      border-radius: 5px;
+      position: relative;
+      opacity: .8;
+    }
+
+    .battery::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 19px;
+      height: 6px;
+      border-radius: 2px;
+      background: var(--ink);
+    }
+
+    .battery::after {
+      content: "";
+      position: absolute;
+      right: -5px;
+      top: 3px;
+      width: 3px;
+      height: 6px;
+      border-radius: 0 2px 2px 0;
+      background: var(--ink);
+    }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 14px 18px 104px;
+    }
+
+    .content::-webkit-scrollbar {
+      width: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      color: var(--ink);
+      font-size: 31px;
+      line-height: 1.22;
+      font-weight: 780;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      color: var(--ink);
+      font-size: 25px;
+      line-height: 1.28;
+      font-weight: 750;
+      letter-spacing: 0;
+    }
+
+    p {
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.45;
+    }
+
+    .homeTop {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .greeting {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .guardText {
+      margin-top: 4px;
+      color: var(--green-dark);
+      font-size: 19px;
+      line-height: 1.35;
+      font-weight: 650;
+    }
+
+    .sosMini {
+      min-width: 70px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      gap: 1px;
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border-radius: 18px;
+      background: var(--red-soft);
+      color: var(--red);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .sosMini strong {
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .sosMini span {
+      font-size: 13px;
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: var(--paper);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .locationCard {
+      min-height: 112px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .mapBadge {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .sync {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      margin-top: 6px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green-dark);
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .voiceButton {
+      min-height: 124px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      border-radius: 30px;
+      background: linear-gradient(145deg, var(--blue), #5E99C4);
+      color: #fff;
+      box-shadow: 0 16px 32px rgba(63, 126, 174, .24);
+      text-align: left;
+    }
+
+    .micCircle {
+      width: 62px;
+      height: 62px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(255,255,255,.22);
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .voiceButton strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+
+    .voiceButton span {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255,255,255,.9);
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 500;
+    }
+
+    .sectionTitle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 2px 0 -4px;
+    }
+
+    .sectionTitle h2 {
+      font-size: 23px;
+    }
+
+    .sectionTitle span {
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .destGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .destCard {
+      min-height: 92px;
+      display: grid;
+      align-content: center;
+      justify-items: start;
+      gap: 4px;
+      padding: 16px;
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--soft-shadow);
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .destCard.full {
+      grid-column: 1 / -1;
+      min-height: 76px;
+      background: var(--green-soft);
+    }
+
+    .destCard.blueSoft {
+      background: var(--blue-soft);
+    }
+
+    .destCard.orangeSoft {
+      background: var(--orange-soft);
+    }
+
+    .destCard strong {
+      font-size: 24px;
+      line-height: 1.2;
+      font-weight: 780;
+    }
+
+    .destCard span {
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.3;
+      font-weight: 520;
+    }
+
+    .familyCard {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .familyCard strong {
+      display: block;
+      margin-top: 4px;
+      color: var(--ink);
+      font-size: 24px;
+      line-height: 1.22;
+      font-weight: 760;
+    }
+
+    .pillButton {
+      min-height: 58px;
+      min-width: 112px;
+      padding: 0 16px;
+      border-radius: 20px;
+      background: var(--green);
+      color: #fff;
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 760;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .btn {
+      min-height: 66px;
+      width: 100%;
+      display: grid;
+      place-items: center;
+      padding: 13px 16px;
+      border-radius: 22px;
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: var(--soft-shadow);
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 760;
+      text-align: center;
+    }
+
+    .btn.primary {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .btn.green {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .btn.orange {
+      background: var(--orange);
+      color: #fff;
+    }
+
+    .btn.red {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .btn.soft {
+      background: #ECE8DF;
+      color: var(--ink);
+    }
+
+    .btn.light {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+    }
+
+    .tabs {
+      height: 84px;
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 12;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid rgba(230,224,213,.92);
+      border-radius: 28px;
+      background: rgba(255,253,248,.96);
+      box-shadow: 0 -10px 28px rgba(55,72,78,.12);
+    }
+
+    .tab {
+      display: grid;
+      place-items: center;
+      gap: 3px;
+      border-radius: 22px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.1;
+      font-weight: 760;
+    }
+
+    .tabIcon {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .tab.active {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .pageHead {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .backBtn {
+      min-height: 46px;
+      min-width: 76px;
+      padding: 0 14px;
+      border-radius: 18px;
+      background: var(--paper);
+      color: var(--blue-dark);
+      box-shadow: var(--soft-shadow);
+      font-size: 18px;
+      font-weight: 760;
+    }
+
+    .statusCard {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .statusIcon {
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      justify-self: center;
+      border-radius: 26px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .statusIcon.green {
+      background: var(--green-soft);
+      color: var(--green-dark);
+    }
+
+    .statusIcon.red {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .notice {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      border-radius: 18px;
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .notice.green {
+      background: var(--green-soft);
+      color: var(--green-dark);
+    }
+
+    .notice.red {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .rows {
+      overflow: hidden;
+    }
+
+    .row {
+      min-height: 68px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--paper);
+      text-align: left;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .row span {
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.32;
+    }
+
+    .row strong {
+      color: var(--ink);
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 760;
+      text-align: right;
+    }
+
+    .map {
+      height: 210px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 26px;
+      background:
+        linear-gradient(90deg, transparent 44%, rgba(255,255,255,.78) 44% 54%, transparent 54%),
+        linear-gradient(0deg, transparent 42%, rgba(255,255,255,.78) 42% 50%, transparent 50%),
+        linear-gradient(145deg, #E6F0E7, #EAF3FA);
+      border: 1px solid var(--line);
+      box-shadow: var(--soft-shadow);
+    }
+
+    .map::before {
+      content: "";
+      width: 230px;
+      height: 10px;
+      position: absolute;
+      left: 42px;
+      top: 118px;
+      border-radius: 999px;
+      background: var(--blue);
+      transform: rotate(-18deg);
+      box-shadow: 0 0 0 7px rgba(63,126,174,.12);
+    }
+
+    .pin {
+      position: absolute;
+      left: 146px;
+      top: 70px;
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      background: var(--green);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 800;
+      box-shadow: 0 12px 24px rgba(120,168,137,.26);
+    }
+
+    .switch {
+      width: 62px;
+      height: 36px;
+      flex: 0 0 auto;
+      padding: 4px;
+      border-radius: 999px;
+      background: #C7CECB;
+    }
+
+    .switch::before {
+      content: "";
+      display: block;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: #fff;
+      transition: transform .16s ease;
+    }
+
+    .switch.on {
+      background: var(--green);
+    }
+
+    .switch.on::before {
+      transform: translateX(26px);
+    }
+
+    .modalMask {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      align-items: end;
+      padding: 16px;
+      background: rgba(38, 50, 56, .28);
+    }
+
+    .modal {
+      display: grid;
+      gap: 14px;
+      padding: 20px;
+      border-radius: 30px;
+      background: var(--paper);
+      box-shadow: 0 24px 60px rgba(38,50,56,.24);
+    }
+
+    .modal h2 {
+      font-size: 27px;
+    }
+
+    .memberCard {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .memberTop {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .memberTop strong {
+      display: block;
+      color: var(--ink);
+      font-size: 23px;
+      line-height: 1.26;
+      font-weight: 760;
+    }
+
+    .memberTop span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .miniTag {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green-dark);
+      font-size: 15px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 430px) {
+      .stage {
+        padding: 0;
+      }
+
+      .phone {
+        width: 100vw;
+        height: 100vh;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .phone::before {
+        display: none;
+      }
+
+      .app {
+        border-radius: 0;
+      }
+    }
+  </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style id="enhance">
+    /* ---------- Typography & atmosphere refinements ---------- */
+    body {
+      font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(242, 166, 90, .20), transparent 34%),
+        radial-gradient(circle at 88% 6%, rgba(63, 126, 174, .18), transparent 36%),
+        radial-gradient(circle at 50% 100%, rgba(120, 168, 137, .16), transparent 44%),
+        #EAEFEC;
+    }
+
+    h1 { letter-spacing: -.01em; }
+
+    /* Rounded, friendly numerals for the big "hero" figures */
+    .statusCard h1,
+    .modal h1 {
+      font-family: "Baloo 2", "Noto Sans SC", sans-serif;
+      letter-spacing: 0;
+    }
+
+    .phone {
+      box-shadow:
+        0 36px 80px rgba(38, 52, 58, .30),
+        0 2px 0 rgba(255, 255, 255, .04) inset;
+    }
+
+    .app {
+      background:
+        radial-gradient(circle at 80% -4%, rgba(63,126,174,.07), transparent 40%),
+        radial-gradient(circle at -10% 6%, rgba(242,166,90,.08), transparent 38%),
+        var(--bg);
+    }
+
+    /* ---------- Cards: softer depth & hairline warmth ---------- */
+    .card,
+    .destCard,
+    .voiceButton,
+    .tabs,
+    .modal {
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, .7) inset,
+        0 10px 26px rgba(55, 72, 78, .09),
+        0 2px 6px rgba(55, 72, 78, .05);
+    }
+
+    .card { border-color: rgba(230, 224, 213, .8); }
+
+    /* ---------- Voice assistant bar (visible caption + equalizer) ---------- */
+    .voiceBar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 6px 16px 4px;
+      padding: 11px 13px;
+      border-radius: 22px;
+      border: 1px solid rgba(63, 126, 174, .16);
+      background: linear-gradient(135deg, #EDF5FB, #E9F4EE);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.7) inset,
+        0 8px 20px rgba(63, 126, 174, .10);
+      transition: border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .voiceBar.speaking {
+      border-color: rgba(63, 126, 174, .42);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.8) inset,
+        0 10px 26px rgba(63, 126, 174, .20);
+    }
+
+    .voiceBar.muted { opacity: .82; }
+
+    .vbIcon {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: rgba(63, 126, 174, .12);
+      color: var(--blue-dark);
+    }
+
+    .vbWave {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 22px;
+    }
+
+    .vbWave i {
+      width: 4px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--blue);
+      opacity: .55;
+      transition: height .2s ease, opacity .2s ease;
+    }
+
+    .voiceBar.speaking .vbWave i {
+      opacity: 1;
+      animation: eq .85s ease-in-out infinite;
+    }
+
+    .vbWave i:nth-child(2) { animation-delay: .12s; }
+    .vbWave i:nth-child(3) { animation-delay: .26s; }
+    .vbWave i:nth-child(4) { animation-delay: .38s; }
+    .vbWave i:nth-child(5) { animation-delay: .18s; }
+
+    @keyframes eq {
+      0%, 100% { height: 6px; }
+      50% { height: 20px; }
+    }
+
+    .vbBody { flex: 1; min-width: 0; }
+
+    .vbLabel {
+      display: block;
+      color: var(--blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      opacity: .72;
+    }
+
+    .vbText {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-top: 1px;
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.3;
+      font-weight: 650;
+    }
+
+    .vbToggle {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .7);
+      color: var(--blue-dark);
+      font-size: 20px;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .voiceBar.muted .vbToggle { color: var(--muted); }
+
+    /* ---------- Hero voice button: pulsing mic ---------- */
+    .voiceButton {
+      background: linear-gradient(145deg, #3F7EAE, #5FA0CB 55%, #6FAED2);
+      box-shadow: 0 18px 38px rgba(63, 126, 174, .30);
+      overflow: hidden;
+    }
+
+    .micCircle {
+      position: relative;
+      background: rgba(255, 255, 255, .26);
+    }
+
+    .micCircle::before,
+    .micCircle::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, .5);
+      animation: micPulse 2.4s ease-out infinite;
+    }
+
+    .micCircle::after { animation-delay: 1.2s; }
+
+    @keyframes micPulse {
+      0% { transform: scale(1); opacity: .6; }
+      80%, 100% { transform: scale(1.85); opacity: 0; }
+    }
+
+    /* ---------- Buttons: gradients + tactile press ---------- */
+    .btn.primary {
+      background: linear-gradient(135deg, #3F7EAE, #5C97C2);
+      box-shadow: 0 12px 26px rgba(63, 126, 174, .30);
+    }
+    .btn.green {
+      background: linear-gradient(135deg, #6FA084, #88BC9B);
+      box-shadow: 0 12px 26px rgba(120, 168, 137, .30);
+    }
+    .btn.orange {
+      background: linear-gradient(135deg, #F0995A, #F6B777);
+      box-shadow: 0 12px 26px rgba(242, 166, 90, .30);
+    }
+    .btn.red {
+      background: linear-gradient(135deg, #D94A4A, #E36A6A);
+      box-shadow: 0 12px 26px rgba(217, 74, 74, .28);
+    }
+
+    .btn, .destCard, .pillButton, .voiceButton, .sosMini,
+    .tab, .backBtn, .row, .vbToggle, .vbIcon {
+      transition: transform .12s cubic-bezier(.3,.8,.3,1), box-shadow .2s ease, background .2s ease;
+    }
+
+    .btn:active, .destCard:active, .pillButton:active,
+    .voiceButton:active, .sosMini:active, .backBtn:active,
+    .vbToggle:active, .row:active { transform: scale(.97); }
+
+    /* ---------- SOS gentle attention ring ---------- */
+    .sosMini {
+      position: relative;
+      background: linear-gradient(135deg, #FFE9E8, #FFDCDA);
+    }
+    .sosMini::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: 0 0 0 0 rgba(217, 74, 74, .34);
+      animation: sosPulse 2.6s ease-out infinite;
+    }
+    @keyframes sosPulse {
+      0% { box-shadow: 0 0 0 0 rgba(217, 74, 74, .34); }
+      70%, 100% { box-shadow: 0 0 0 12px rgba(217, 74, 74, 0); }
+    }
+
+    /* ---------- Status icons: gradient fills ---------- */
+    .statusIcon { background: linear-gradient(135deg, #E8F2FA, #DCEBF6); }
+    .statusIcon.green { background: linear-gradient(135deg, #EAF5EE, #DCEFE3); }
+    .statusIcon.red { background: linear-gradient(135deg, #FFE9E8, #FFDADA); }
+    .mapBadge { background: linear-gradient(135deg, #E8F2FA, #DCEBF6); }
+
+    /* ---------- Tab bar polish ---------- */
+    .tabs { backdrop-filter: blur(8px); }
+    .tab.active {
+      background: linear-gradient(135deg, #3F7EAE, #5C97C2);
+      box-shadow: 0 8px 18px rgba(63, 126, 174, .30);
+    }
+
+    /* ---------- Animated map dot ---------- */
+    .pin { animation: pinFloat 2.6s ease-in-out infinite; }
+    @keyframes pinFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* ---------- Page + staggered entrance ---------- */
+    .content { animation: pageIn .42s cubic-bezier(.22,.9,.3,1); }
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .stack > * { animation: rise .5s both cubic-bezier(.22,.9,.3,1); }
+    .stack > *:nth-child(1) { animation-delay: .02s; }
+    .stack > *:nth-child(2) { animation-delay: .08s; }
+    .stack > *:nth-child(3) { animation-delay: .14s; }
+    .stack > *:nth-child(4) { animation-delay: .20s; }
+    .stack > *:nth-child(5) { animation-delay: .26s; }
+    .stack > *:nth-child(6) { animation-delay: .32s; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* ---------- Modal slide-up ---------- */
+    .modalMask { animation: maskIn .2s ease; }
+    .modal { animation: modalUp .34s cubic-bezier(.22,.9,.3,1); }
+    @keyframes maskIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes modalUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; }
+    }
+
+    /* ---------- Home: everything visible on one screen, no scrolling ---------- */
+    .content-home {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      padding-top: 8px;
+      padding-bottom: 98px;
+    }
+
+    .content-home .homeTop { margin-bottom: 0; gap: 4px; }
+    .content-home .stack {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      min-height: 0;
+    }
+
+    .content-home h1 { font-size: 25px; line-height: 1.18; }
+    .content-home .guardText { font-size: 16px; margin-top: 1px; }
+    .content-home .sosMini { min-width: 66px; height: 50px; }
+
+    .content-home .locationCard {
+      min-height: 0;
+      padding: 11px 14px;
+      gap: 12px;
+    }
+    .content-home .locationCard .mapBadge { width: 50px; height: 50px; font-size: 24px; border-radius: 17px; }
+    .content-home .locationCard p { font-size: 15px; }
+    .content-home .locationCard h2 { font-size: 20px; line-height: 1.2; }
+    .content-home .sync { min-height: 24px; margin-top: 4px; font-size: 14px; }
+
+    .content-home .voiceButton {
+      min-height: 92px;
+      padding: 14px 18px;
+      gap: 14px;
+    }
+    .content-home .voiceButton strong { font-size: 26px; }
+    .content-home .voiceButton span { font-size: 16px; margin-top: 2px; }
+    .content-home .micCircle { width: 54px; height: 54px; font-size: 26px; }
+
+    .content-home .sectionTitle { margin: 0; }
+    .content-home .sectionTitle h2 { font-size: 20px; }
+    .content-home .sectionTitle span { font-size: 15px; }
+
+    .content-home .destGrid { gap: 10px; }
+    .content-home .destCard { min-height: 74px; padding: 12px 14px; border-radius: 20px; }
+    .content-home .destCard.full { min-height: 58px; }
+    .content-home .destCard strong { font-size: 21px; }
+    .content-home .destCard span { font-size: 15px; }
+
+    .content-home .familyCard { padding: 11px 14px; gap: 12px; }
+    .content-home .familyCard p { font-size: 15px; }
+    .content-home .familyCard strong { font-size: 21px; margin-top: 2px; }
+    .content-home .pillButton { min-height: 52px; min-width: 104px; font-size: 19px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div id="app" class="app"></div>
+    </div>
+  </div>
+
+  <script>
+    const places = {
+      home: { label: "回家", title: "幸福小区", detail: "幸福小区 3 号楼" },
+      hospital: { label: "去医院", title: "市人民医院", detail: "市人民医院门诊楼" },
+      daughter: { label: "找女儿", title: "女儿位置", detail: "联系并导航到女儿位置" }
+    };
+
+    const state = {
+      tab: "home",
+      page: "home",
+      modal: null,
+      destination: "home",
+      tripStatus: "none",
+      safeRange: 500,
+      editingMemberId: "daughter",
+      pendingRelation: "儿子",
+      actionTitle: "",
+      actionText: "",
+      actionReturn: "home",
+      familyMembers: [
+        { id: "daughter", relation: "女儿", name: "李女士", phone: "138****8888", primary: true },
+        { id: "son", relation: "儿子", name: "张先生", phone: "136****6666", primary: false }
+      ],
+      addresses: [
+        { id: "home", label: "家", value: "幸福小区 3 号楼" },
+        { id: "hospital", label: "医院", value: "市人民医院" },
+        { id: "daughter", label: "女儿家", value: "林荫路 18 号" }
+      ],
+      alerts: {
+        range: true,
+        wait: true,
+        route: true,
+        cancel: true
+      }
+    };
+
+    /* ===================== Voice assistant ===================== */
+    const voice = { enabled: true, speaking: false, zhVoice: null, lastText: "语音助手已就绪" };
+    const speechOK = typeof window !== "undefined" && "speechSynthesis" in window;
+
+    function pickVoice() {
+      if (!speechOK) return;
+      const list = speechSynthesis.getVoices() || [];
+      voice.zhVoice =
+        list.find(v => /^zh|cmn/i.test(v.lang) && /female|女|Tingting|Mei|Xiaoxiao/i.test(v.name)) ||
+        list.find(v => /^zh|cmn/i.test(v.lang)) ||
+        null;
+    }
+    if (speechOK) {
+      pickVoice();
+      speechSynthesis.onvoiceschanged = pickVoice;
+    }
+
+    function setVoiceState(on) {
+      voice.speaking = on;
+      const bar = document.querySelector(".voiceBar");
+      if (bar) bar.classList.toggle("speaking", on);
+    }
+
+    function updateVoiceCaption(text) {
+      voice.lastText = text;
+      const el = document.querySelector(".vbText");
+      if (el) el.textContent = text;
+    }
+
+    function speak(text) {
+      if (!text) return;
+      updateVoiceCaption(text);
+      if (!voice.enabled || !speechOK) return;
+      try {
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "zh-CN";
+        if (voice.zhVoice) u.voice = voice.zhVoice;
+        u.rate = 0.9;   // a little slower, easier for elderly listeners
+        u.pitch = 1.0;
+        u.volume = 1.0;
+        u.onstart = () => setVoiceState(true);
+        u.onend = () => setVoiceState(false);
+        u.onerror = () => setVoiceState(false);
+        speechSynthesis.speak(u);
+      } catch (e) { /* ignore */ }
+    }
+
+    function replayVoice() { speak(voice.lastText); }
+
+    function toggleVoice() {
+      voice.enabled = !voice.enabled;
+      if (!voice.enabled && speechOK) { try { speechSynthesis.cancel(); } catch (e) {} voice.speaking = false; }
+      render();
+      if (voice.enabled) speak("语音播报，已开启");
+    }
+
+    function voiceBar() {
+      return `
+        <div class="voiceBar ${voice.speaking ? "speaking" : ""} ${voice.enabled ? "" : "muted"}">
+          <button class="vbIcon" onclick="replayVoice()" aria-label="再说一遍">
+            <span class="vbWave"><i></i><i></i><i></i><i></i><i></i></span>
+          </button>
+          <div class="vbBody">
+            <span class="vbLabel">语音助手 · 点这里再听一遍</span>
+            <div class="vbText">${voice.lastText}</div>
+          </div>
+          <button class="vbToggle" onclick="toggleVoice()" aria-label="开关语音">${voice.enabled ? "🔊" : "🔇"}</button>
+        </div>
+      `;
+    }
+
+    /* Spoken prompt for the current page / modal */
+    function waitingPrompt() {
+      const p = places[state.destination];
+      return `已经为您叫好车了。目的地，${p.title}。司机大约三分钟到达，车牌 京A 88888，白色大众。上车以后，请点击，我已上车。`;
+    }
+    function movingPrompt() {
+      const p = places[state.destination];
+      return `行程开始了，正在前往，${p.title}，预计十五分钟到达。${primaryMember().relation}正在为您守护，请放心。`;
+    }
+    function paymentPrompt() {
+      return `您已经平安到达了。本次车费，十五元。可以请${primaryMember().relation}代付，或者用现金支付。`;
+    }
+
+    function pagePrompt() {
+      const primary = primaryMember();
+      switch (state.page) {
+        case "home":
+          return `早上好，王阿姨。${primary.relation}正在守护您。需要出门，可以点击蓝色的语音叫车，或者选择下面的常用目的地。`;
+        case "trip":
+          if (state.tripStatus === "waiting") return waitingPrompt();
+          if (state.tripStatus === "moving") return movingPrompt();
+          if (state.tripStatus === "arrived") return paymentPrompt();
+          return "现在没有正在进行的行程。需要出门时，回到首页，点击语音叫车就可以了。";
+        case "waiting": return waitingPrompt();
+        case "payment": return paymentPrompt();
+        case "action": return `${state.actionTitle}。${state.actionText}`;
+        case "mine": return "这里是我的页面，可以管理家人，和安全设置。";
+        case "familyManage": return "家人管理。这里可以添加家人或者护工，也可以把某位家人设为主要联系人。";
+        case "familyEdit": { const m = memberById(state.editingMemberId); return `正在编辑，${m.relation}，${m.name}，的信息。`; }
+        case "familyInvite": return `邀请${state.pendingRelation}绑定。请让对方在家属端，输入绑定码，2，6，8，8。`;
+        case "familySaved": return "已经为您保存好了。";
+        case "settings": return "安全设置。可以设置常用地址，安全范围，还有异常提醒。";
+        case "addressSettings": return "常用地址设置。这里是您常去的地点。";
+        case "rangeSettings": return `安全范围是 ${state.safeRange} 米。离开这个范围时，会提醒家人。`;
+        case "alertSettings": return "异常提醒设置。出现问题时会提醒家人。";
+        default: return "";
+      }
+    }
+
+    function modalPrompt() {
+      const primary = primaryMember();
+      const place = places[state.destination] || {};
+      if (state.modal === "voice") return "请说出您想去的地方。比如说，我要回家。或者，我要去医院。说完以后，点击我说完了。";
+      if (state.modal === "confirmRide") return `确认要叫车，${place.label}吗？目的地是，${place.title}。家人会收到行程通知。`;
+      if (state.modal === "sos") return `是否联系紧急联系人？我们会马上通知${primary.relation}，并把您当前的位置发送过去。`;
+      return "";
+    }
+
+    function announce() {
+      speak(state.modal ? modalPrompt() : pagePrompt());
+    }
+    /* =========================================================== */
+
+    function primaryMember() {
+      return state.familyMembers.find(member => member.primary) || state.familyMembers[0];
+    }
+
+    function memberById(id) {
+      return state.familyMembers.find(member => member.id === id) || primaryMember();
+    }
+
+    function setTab(tab) {
+      state.tab = tab;
+      state.page = tab;
+      state.modal = null;
+      render();
+      announce();
+    }
+
+    function go(page, payload = {}) {
+      Object.assign(state, payload);
+      state.page = page;
+      state.modal = null;
+      if (["trip", "waiting", "payment", "action"].includes(page)) state.tab = "trip";
+      if (["mine", "familyManage", "familyEdit", "familyInvite", "settings", "addressSettings", "rangeSettings", "alertSettings"].includes(page)) state.tab = "mine";
+      render();
+      announce();
+    }
+
+    function openModal(modal, payload = {}) {
+      Object.assign(state, payload);
+      state.modal = modal;
+      render();
+      announce();
+    }
+
+    function closeModal() {
+      state.modal = null;
+      render();
+      announce();
+    }
+
+    function confirmRide(destination) {
+      state.destination = destination;
+      openModal("confirmRide");
+    }
+
+    function startTrip() {
+      state.tripStatus = "waiting";
+      go("waiting");
+    }
+
+    function finishTrip() {
+      state.tripStatus = "arrived";
+      go("payment");
+    }
+
+    function saveAction(title, text, returnPage = "home") {
+      state.actionTitle = title;
+      state.actionText = text;
+      state.actionReturn = returnPage;
+      go("action");
+    }
+
+    function returnFromAction() {
+      if (state.actionReturn === "home") setTab("home");
+      else go(state.actionReturn);
+    }
+
+    function setPrimaryMember(id) {
+      state.familyMembers.forEach(member => member.primary = member.id === id);
+      state.editingMemberId = id;
+      go("familySaved");
+    }
+
+    function saveMemberEdit() {
+      const member = memberById(state.editingMemberId);
+      member.phone = "139****0000";
+      go("familySaved");
+    }
+
+    function removeMember(id) {
+      if (state.familyMembers.length <= 1) {
+        saveAction("至少保留一位家人", "请先添加其他家人，再解除绑定。", "familyManage");
+        return;
+      }
+      state.familyMembers = state.familyMembers.filter(member => member.id !== id);
+      if (!state.familyMembers.some(member => member.primary)) state.familyMembers[0].primary = true;
+      go("familyManage");
+    }
+
+    function confirmInvite() {
+      const names = { "儿子": "张先生", "护工": "王护工", "邻居": "陈阿姨", "女儿": "李女士" };
+      const id = `member${Date.now()}`;
+      state.familyMembers.push({
+        id,
+        relation: state.pendingRelation,
+        name: names[state.pendingRelation] || "新家人",
+        phone: "139****0000",
+        primary: state.familyMembers.length === 0
+      });
+      state.editingMemberId = id;
+      go("familySaved");
+    }
+
+    function addAddress() {
+      if (!state.addresses.some(item => item.id === "community")) {
+        state.addresses.push({ id: "community", label: "社区医院", value: "康宁路 6 号" });
+      }
+      go("addressSettings");
+    }
+
+    function toggleAlert(key) {
+      state.alerts[key] = !state.alerts[key];
+      render();
+      const names = { range: "离开范围提醒", wait: "久未上车提醒", route: "路线不对提醒", cancel: "多次取消提醒" };
+      speak(`${names[key] || "提醒"}，已${state.alerts[key] ? "开启" : "关闭"}。`);
+    }
+
+    function setRange(meters) {
+      state.safeRange = meters;
+      render();
+      speak(`安全范围已设置为 ${meters} 米。`);
+    }
+
+    function render() {
+      document.getElementById("app").innerHTML = `
+        <div class="status">
+          <span>09:41</span>
+          <span></span>
+          <span class="battery"></span>
+        </div>
+        ${voiceBar()}
+        <main class="content content-${state.page}">${pageContent()}</main>
+        ${tabs()}
+        ${modalContent()}
+      `;
+    }
+
+    function tabs() {
+      return `
+        <nav class="tabs">
+          <button class="tab ${state.tab === "home" ? "active" : ""}" onclick="setTab('home')"><span class="tabIcon">⌂</span>首页</button>
+          <button class="tab ${state.tab === "trip" ? "active" : ""}" onclick="setTab('trip')"><span class="tabIcon">●</span>行程</button>
+          <button class="tab ${state.tab === "mine" ? "active" : ""}" onclick="setTab('mine')"><span class="tabIcon">◎</span>我的</button>
+        </nav>
+      `;
+    }
+
+    function pageContent() {
+      const map = {
+        home: homePage,
+        trip: tripPage,
+        mine: minePage,
+        waiting: waitingPage,
+        payment: paymentPage,
+        action: actionPage,
+        familyManage: familyManagePage,
+        familyEdit: familyEditPage,
+        familyInvite: familyInvitePage,
+        familySaved: familySavedPage,
+        settings: settingsPage,
+        addressSettings: addressSettingsPage,
+        rangeSettings: rangeSettingsPage,
+        alertSettings: alertSettingsPage
+      };
+      return (map[state.page] || homePage)();
+    }
+
+    function homePage() {
+      const primary = primaryMember();
+      return `
+        <section class="homeTop">
+          <div class="greeting">
+            <div>
+              <h1>早上好，王阿姨</h1>
+              <div class="guardText">${primary.relation}正在守护中</div>
+            </div>
+            <button class="sosMini" onclick="openModal('sos')"><strong>SOS</strong><span>紧急求助</span></button>
+          </div>
+        </section>
+
+        <section class="stack">
+          <section class="card locationCard">
+            <div class="mapBadge">⌖</div>
+            <div>
+              <p>当前位置</p>
+              <h2>幸福小区 3 号门附近</h2>
+              <span class="sync">已同步给${primary.relation}</span>
+            </div>
+          </section>
+
+          <button class="voiceButton" onclick="openModal('voice')">
+            <div class="micCircle">话</div>
+            <div>
+              <strong>语音叫车</strong>
+              <span>点击后说：“我要回家”</span>
+            </div>
+          </button>
+
+          <div class="sectionTitle">
+            <h2>常用目的地</h2>
+            <span>一键选择</span>
+          </div>
+
+          <div class="destGrid">
+            <button class="destCard blueSoft" onclick="confirmRide('home')"><strong>回家</strong><span>幸福小区</span></button>
+            <button class="destCard" onclick="confirmRide('hospital')"><strong>去医院</strong><span>市人民医院</span></button>
+            <button class="destCard full" onclick="confirmRide('daughter')"><strong>找${primary.relation}</strong><span>联系并导航到${primary.relation}位置</span></button>
+          </div>
+
+          <section class="card familyCard">
+            <div>
+              <p>联系家属</p>
+              <strong>${primary.relation} ${primary.name}</strong>
+            </div>
+            <button class="pillButton" onclick="saveAction('已拨打${primary.relation}', '通话结束后可以继续叫车。', 'home')">一键拨打</button>
+          </section>
+        </section>
+      `;
+    }
+
+    function tripPage() {
+      if (state.tripStatus === "waiting") return waitingPage();
+      if (state.tripStatus === "moving") return movingPage();
+      if (state.tripStatus === "arrived") return paymentPage();
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>暂无行程</h1><p>需要出门时，回到首页语音叫车。</p></div></div>
+          <button class="btn primary" onclick="setTab('home')">返回首页</button>
+          <button class="btn light" onclick="confirmRide('home')">一键回家</button>
+        </section>
+      `;
+    }
+
+    function movingPage() {
+      const place = places[state.destination];
+      const primary = primaryMember();
+      return `
+        <section class="stack">
+          <div class="pageHead">
+            <div><h1>行程中</h1><p>正在前往：${place.title}</p></div>
+          </div>
+          <section class="card statusCard">
+            <div class="statusIcon green">护</div>
+            <p>预计到达</p>
+            <h1 style="color:var(--blue)">15 分钟</h1>
+          </section>
+          <div class="notice green">${primary.relation}正在查看本次行程</div>
+          <div class="map"><div class="pin">车</div></div>
+          <button class="btn light" onclick="saveAction('已联系${primary.relation}', '当前位置已同步发送。', 'trip')">联系${primary.relation}</button>
+          <button class="btn red" onclick="openModal('sos')">紧急求助</button>
+          <button class="btn green" onclick="finishTrip()">已到达</button>
+        </section>
+      `;
+    }
+
+    function waitingPage() {
+      const place = places[state.destination];
+      const primary = primaryMember();
+      return `
+        <section class="stack">
+          <div class="pageHead">
+            <div><h1>司机快到了</h1><p>目的地：${place.title}</p></div>
+          </div>
+          <section class="card statusCard">
+            <div class="statusIcon">车</div>
+            <p>大约还需等待</p>
+            <h1 style="color:var(--blue)">3 分钟</h1>
+          </section>
+          <section class="card rows">
+            <div class="row"><span>车牌</span><strong>京A · 88888</strong></div>
+            <div class="row"><span>车辆</span><strong>白色大众</strong></div>
+            <div class="row"><span>家属</span><strong>${primary.relation}已收到</strong></div>
+          </section>
+          <button class="btn light" onclick="saveAction('已联系司机', '已发送：我在原地等您。', 'waiting')">联系司机</button>
+          <button class="btn green" onclick="state.tripStatus='moving'; go('trip')">我已上车</button>
+        </section>
+      `;
+    }
+
+    function paymentPage() {
+      const primary = primaryMember();
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>已到达</h1><p>本次车费</p></div></div>
+          <section class="card statusCard">
+            <div class="statusIcon green">✓</div>
+            <h1 style="font-size:58px;color:var(--blue)">15 元</h1>
+          </section>
+          <button class="btn primary" onclick="saveAction('${primary.relation}代付成功', '本次行程已结束。', 'home')">${primary.relation}代付</button>
+          <button class="btn orange" onclick="saveAction('现金已付', '已通知${primary.relation}行程结束。', 'home')">现金支付</button>
+        </section>
+      `;
+    }
+
+    function actionPage() {
+      return `
+        <section class="stack">
+          <section class="card statusCard">
+            <div class="statusIcon green">✓</div>
+            <h1>${state.actionTitle}</h1>
+            <p>${state.actionText}</p>
+          </section>
+          <button class="btn primary" onclick="returnFromAction()">返回</button>
+        </section>
+      `;
+    }
+
+    function minePage() {
+      const primary = primaryMember();
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>我的</h1><p>管理家人和安全设置</p></div></div>
+          <section class="card rows">
+            <div class="row"><span>主要联系人</span><strong>${primary.relation}</strong></div>
+            <div class="row"><span>已绑定家人</span><strong>${state.familyMembers.length} 人</strong></div>
+          </section>
+          <button class="btn primary" onclick="go('familyManage')">管理家人</button>
+          <button class="btn green" onclick="go('settings')">安全设置</button>
+        </section>
+      `;
+    }
+
+    function familyManagePage() {
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>家人管理</h1><p>可绑定多个家人</p></div><button class="backBtn" onclick="setTab('mine')">返回</button></div>
+          ${state.familyMembers.map(member => `
+            <section class="card memberCard">
+              <div class="memberTop">
+                <div><strong>${member.relation} · ${member.name}</strong><span>${member.phone}</span></div>
+                <span class="miniTag">${member.primary ? "主要" : "已绑定"}</span>
+              </div>
+              <div class="destGrid">
+                <button class="btn light" onclick="go('familyEdit', { editingMemberId: '${member.id}' })">编辑</button>
+                <button class="btn soft" onclick="setPrimaryMember('${member.id}')">设为主要</button>
+              </div>
+            </section>
+          `).join("")}
+          <button class="btn primary" onclick="go('familyInvite', { pendingRelation: '儿子' })">添加家人</button>
+          <button class="btn light" onclick="go('familyInvite', { pendingRelation: '护工' })">添加护工</button>
+        </section>
+      `;
+    }
+
+    function familyEditPage() {
+      const member = memberById(state.editingMemberId);
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>编辑家人</h1><p>${member.relation} ${member.name}</p></div><button class="backBtn" onclick="go('familyManage')">返回</button></div>
+          <section class="card rows">
+            <div class="row"><span>关系</span><strong>${member.relation}</strong></div>
+            <div class="row"><span>姓名</span><strong>${member.name}</strong></div>
+            <div class="row"><span>电话</span><strong>${member.phone}</strong></div>
+            <div class="row"><span>主要联系人</span><strong>${member.primary ? "是" : "否"}</strong></div>
+          </section>
+          <button class="btn green" onclick="saveMemberEdit()">保存修改</button>
+          <button class="btn primary" onclick="setPrimaryMember('${member.id}')">设为主要联系人</button>
+          <button class="btn red" onclick="removeMember('${member.id}')">解除绑定</button>
+        </section>
+      `;
+    }
+
+    function familyInvitePage() {
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>邀请绑定</h1><p>邀请${state.pendingRelation}</p></div><button class="backBtn" onclick="go('familyManage')">返回</button></div>
+          <section class="card statusCard">
+            <div class="statusIcon green">码</div>
+            <p>绑定码</p>
+            <h1 style="font-size:56px;color:var(--blue)">2688</h1>
+            <div class="notice green">让对方在家属端输入绑定码</div>
+          </section>
+          <button class="btn primary" onclick="saveAction('邀请已发送', '${state.pendingRelation}收到绑定邀请。', 'familyManage')">发送邀请</button>
+          <button class="btn green" onclick="confirmInvite()">模拟绑定成功</button>
+        </section>
+      `;
+    }
+
+    function familySavedPage() {
+      const member = memberById(state.editingMemberId);
+      return `
+        <section class="stack">
+          <section class="card statusCard">
+            <div class="statusIcon green">✓</div>
+            <h1>已保存</h1>
+            <p>${member.relation} ${member.name}</p>
+          </section>
+          <button class="btn primary" onclick="go('familyManage')">继续管理</button>
+          <button class="btn soft" onclick="setTab('mine')">返回我的</button>
+        </section>
+      `;
+    }
+
+    function settingsPage() {
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>安全设置</h1><p>家属守护规则</p></div><button class="backBtn" onclick="setTab('mine')">返回</button></div>
+          <section class="card rows">
+            <button class="row" onclick="go('addressSettings')"><span>常用地址</span><strong>${state.addresses.length} 个</strong></button>
+            <button class="row" onclick="go('rangeSettings')"><span>安全范围</span><strong>${state.safeRange} 米</strong></button>
+            <button class="row" onclick="go('alertSettings')"><span>异常提醒</span><strong>已开启</strong></button>
+          </section>
+        </section>
+      `;
+    }
+
+    function addressSettingsPage() {
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>常用地址</h1><p>老人常去地点</p></div><button class="backBtn" onclick="go('settings')">返回</button></div>
+          <section class="card rows">
+            ${state.addresses.map(item => `<div class="row"><span>${item.label}</span><strong>${item.value}</strong></div>`).join("")}
+          </section>
+          <button class="btn primary" onclick="addAddress()">添加社区医院</button>
+        </section>
+      `;
+    }
+
+    function rangeSettingsPage() {
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>安全范围</h1><p>离开范围会提醒家属</p></div><button class="backBtn" onclick="go('settings')">返回</button></div>
+          <div class="map"><div class="pin">王</div></div>
+          <section class="card rows">
+            <div class="row"><span>当前范围</span><strong>${state.safeRange} 米</strong></div>
+            <button class="row" onclick="toggleAlert('range')"><span>离开范围提醒</span><span class="switch ${state.alerts.range ? "on" : ""}"></span></button>
+          </section>
+          <button class="btn primary" onclick="setRange(800)">扩大到 800 米</button>
+          <button class="btn soft" onclick="setRange(500)">恢复 500 米</button>
+        </section>
+      `;
+    }
+
+    function alertSettingsPage() {
+      return `
+        <section class="stack">
+          <div class="pageHead"><div><h1>异常提醒</h1><p>出现问题时提醒家属</p></div><button class="backBtn" onclick="go('settings')">返回</button></div>
+          <section class="card rows">
+            <button class="row" onclick="toggleAlert('range')"><span>离开范围提醒</span><span class="switch ${state.alerts.range ? "on" : ""}"></span></button>
+            <button class="row" onclick="toggleAlert('wait')"><span>久未上车提醒</span><span class="switch ${state.alerts.wait ? "on" : ""}"></span></button>
+            <button class="row" onclick="toggleAlert('route')"><span>路线不对提醒</span><span class="switch ${state.alerts.route ? "on" : ""}"></span></button>
+            <button class="row" onclick="toggleAlert('cancel')"><span>多次取消提醒</span><span class="switch ${state.alerts.cancel ? "on" : ""}"></span></button>
+          </section>
+        </section>
+      `;
+    }
+
+    function modalContent() {
+      if (!state.modal) return "";
+      if (state.modal === "voice") return `
+        <div class="modalMask">
+          <section class="modal">
+            <h2>请说出您想去的地方</h2>
+            <p>可以说：我要回家 / 我要去医院</p>
+            <div class="notice">正在听您说话...</div>
+            <button class="btn primary" onclick="confirmRide('home')">我说完了</button>
+            <button class="btn soft" onclick="closeModal()">取消</button>
+          </section>
+        </div>
+      `;
+
+      if (state.modal === "confirmRide") {
+        const place = places[state.destination];
+        return `
+          <div class="modalMask">
+            <section class="modal">
+              <h2>确认叫车${place.label}吗？</h2>
+              <p>目的地：${place.title}</p>
+              <div class="notice green">家属将收到行程通知</div>
+              <button class="btn primary" onclick="startTrip()">确认叫车</button>
+              <button class="btn soft" onclick="closeModal()">取消</button>
+            </section>
+          </div>
+        `;
+      }
+
+      if (state.modal === "sos") {
+        const primary = primaryMember();
+        return `
+          <div class="modalMask">
+            <section class="modal">
+              <h2>是否联系紧急联系人？</h2>
+              <p>我们将通知${primary.relation}，并发送您的当前位置。</p>
+              <button class="btn red" onclick="saveAction('已通知${primary.relation}', '当前位置已发送，请留在安全位置。', 'home')">立即求助</button>
+              <button class="btn soft" onclick="closeModal()">取消</button>
+            </section>
+          </div>
+        `;
+      }
+    }
+
+    function returnFromAction() {
+      if (state.actionReturn === "home") setTab("home");
+      else go(state.actionReturn);
+    }
+
+    render();
+    // Show the greeting caption right away; speak it on first interaction
+    updateVoiceCaption(pagePrompt());
+    let primed = false;
+    function primeVoice() {
+      if (primed) return;
+      primed = true;
+      announce();
+    }
+    document.addEventListener("pointerdown", primeVoice, { once: true });
+  </script>
+</body>
+</html>
